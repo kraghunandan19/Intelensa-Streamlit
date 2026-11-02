@@ -22,23 +22,23 @@ st.title("Player Comparison")
 # ==========================================
 
 epl_df = pd.read_excel(
-    r"C:\Users\K Raghunandan\Analyst\Sports Analysis\Football\Streamlit\Data\epl_players.xlsx"
+    "epl_players.xlsx"
 )
 
 laliga_df = pd.read_excel(
-    r"C:\Users\K Raghunandan\Analyst\Sports Analysis\Football\Streamlit\Data\laliga_players.xlsx"
+    "laliga_players.xlsx"
 )
 
 bundesliga_df = pd.read_excel(
-    r"C:\Users\K Raghunandan\Analyst\Sports Analysis\Football\Streamlit\Data\bundesliga_players.xlsx"
+    "bundesliga_players.xlsx"
 )
 
 seriaa_df = pd.read_excel(
-    r"C:\Users\K Raghunandan\Analyst\Sports Analysis\Football\Streamlit\Data\seriaa_players.xlsx"
+    "seriaa_players.xlsx"
 )
 
 ligue1_df = pd.read_excel(
-    r"C:\Users\K Raghunandan\Analyst\Sports Analysis\Football\Streamlit\Data\ligue1_players.xlsx"
+    "ligue1_players.xlsx"
 )
 
 
