@@ -4,11 +4,6 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-
-# ==========================================
-# PAGE CONFIGURATION
-# ==========================================
-
 st.set_page_config(
     page_title="Player Comparison",
     layout="wide"
@@ -16,10 +11,6 @@ st.set_page_config(
 
 st.title("Player Comparison")
 
-
-# ==========================================
-# LOAD DATAFRAMES
-# ==========================================
 
 epl_df = pd.read_excel(
     "epl_players.xlsx"
@@ -42,10 +33,6 @@ ligue1_df = pd.read_excel(
 )
 
 
-# ==========================================
-# SESSION STATE INITIALIZATION
-# ==========================================
-
 if "master_df" not in st.session_state:
     st.session_state.master_df = pd.DataFrame()
 
@@ -55,10 +42,6 @@ if "selected_league" not in st.session_state:
 if "last_added" not in st.session_state:
     st.session_state.last_added = None
 
-
-# ==========================================
-# ADD PLAYER FUNCTION
-# ==========================================
 
 def add_player_to_comparison(player_df, player_name):
 
@@ -77,10 +60,6 @@ def add_player_to_comparison(player_df, player_name):
     st.session_state.last_added = player_name
 
 
-# ==========================================
-# LEAGUE SELECTION FUNCTION
-# ==========================================
-
 def select_league(league):
 
     st.session_state.selected_league = league
@@ -89,10 +68,6 @@ def select_league(league):
     st.session_state.team_select = None
     st.session_state.player_select = None
 
-
-# ==========================================
-# LEAGUE BUTTONS
-# ==========================================
 
 col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -136,11 +111,6 @@ with col5:
         args=("Serie A",)
     )
 
-
-# ==========================================
-# SELECT DATAFRAME
-# ==========================================
-
 league_dfs = {
     "Premier League": epl_df,
     "La Liga": laliga_df,
@@ -154,15 +124,9 @@ selected_league = st.session_state.selected_league
 df = league_dfs[selected_league]
 
 
-# ==========================================
-# PLAYER SELECTION
-# ==========================================
-
 st.divider()
 
 st.subheader("Player Selection")
-
-# TEAM DROPDOWN
 
 team_options = sorted(
     df["team"].dropna().unique()
@@ -175,9 +139,6 @@ team = st.selectbox(
     placeholder="Choose a team...",
     key="team_select"
 )
-
-
-# PLAYER DROPDOWN
 
 if team is not None:
 
@@ -199,11 +160,6 @@ else:
 
     player = None
 
-
-# ==========================================
-# FILTER SELECTED PLAYER
-# ==========================================
-
 if team is not None and player is not None:
 
     filtered_df = df[
@@ -221,8 +177,6 @@ if team is not None and player is not None:
         use_container_width=True
     )
 
-    # ADD BUTTON
-
     st.button(
         "Add",
         type="primary",
@@ -231,20 +185,12 @@ if team is not None and player is not None:
     )
 
 
-# ==========================================
-# SUCCESS MESSAGE
-# ==========================================
-
 if st.session_state.last_added is not None:
 
     st.success(
         f"{st.session_state.last_added} added to comparison!"
     )
 
-
-# ==========================================
-# PLAYER COMPARISON RADAR
-# ==========================================
 
 st.divider()
 
@@ -254,8 +200,6 @@ master_df = st.session_state.master_df
 
 
 if not master_df.empty:
-
-    # METRICS FOR RADAR CHART
 
     possible_metrics = [
         "apps",
@@ -278,16 +222,12 @@ if not master_df.empty:
 
         radar_df = master_df.copy()
 
-        # CONVERT METRICS TO NUMERIC
-
         for col in metrics:
 
             radar_df[col] = pd.to_numeric(
                 radar_df[col],
                 errors="coerce"
             )
-
-        # NORMALIZE METRICS TO 0-100
 
         normalized_df = radar_df[metrics].copy()
 
@@ -305,8 +245,6 @@ if not master_df.empty:
                     normalized_df[col] / max_value
                 ) * 100
 
-        # CREATE RADAR CHART
-
         fig = go.Figure()
 
         for idx, row in radar_df.iterrows():
@@ -314,21 +252,18 @@ if not master_df.empty:
             player_name = row["player"]
             team_name = row["team"]
 
-            # Normalized values for this player
             values = (
                 normalized_df.loc[idx, metrics]
                 .fillna(0)
                 .tolist()
             )
 
-            # Actual values for this player
             actual_values = (
                 radar_df.loc[idx, metrics]
                 .fillna(0)
                 .tolist()
             )
 
-            # Combine actual and normalized values
             custom_data = [
                 [actual, normalized]
                 for actual, normalized in zip(
@@ -369,8 +304,6 @@ if not master_df.empty:
             )
 
 
-
-        # CHART DESIGN
 
         fig.update_layout(
 
@@ -425,10 +358,6 @@ else:
     )
 
 
-# ==========================================
-# PLAYER COMPARISON DATABASE
-# ==========================================
-
 st.divider()
 
 st.subheader("Player Comparison Database")
@@ -444,10 +373,6 @@ st.write(
 )
 
 
-# ==========================================
-# CLEAR COMPARISON
-# ==========================================
-
 if st.button("Clear Comparison"):
 
     st.session_state.master_df = pd.DataFrame()
@@ -456,10 +381,6 @@ if st.button("Clear Comparison"):
 
     st.rerun()
 
-
-# ==========================================
-# DOWNLOAD DATABASE
-# ==========================================
 
 if not st.session_state.master_df.empty:
 
@@ -474,15 +395,11 @@ if not st.session_state.master_df.empty:
         mime="text/csv"
     )
 
-# ==========================================
-# PLAYER METRICS SCATTER PLOT
-# ==========================================
 
 st.divider()
 
 st.subheader("Player Metrics Comparison")
 
-# Combine all league DataFrames
 
 scatter_dfs = []
 
@@ -498,13 +415,6 @@ scatter_df = pd.concat(
     scatter_dfs,
     ignore_index=True
 )
-
-
-# ==========================================
-# CALCULATE PER 90 METRICS
-# ==========================================
-
-# Convert relevant columns to numeric
 
 base_metrics = [
     "goals",
@@ -525,8 +435,6 @@ for col in base_metrics:
             errors="coerce"
         )
 
-
-# Calculate per 90 metrics
 
 if "min" in scatter_df.columns:
 
@@ -550,10 +458,6 @@ if "min" in scatter_df.columns:
             ) * 90
 
 
-# ==========================================
-# AVAILABLE METRICS
-# ==========================================
-
 excluded_columns = [
     "id",
     "player_id",
@@ -571,11 +475,6 @@ numeric_metrics = [
     if col not in excluded_columns
 
 ]
-
-
-# ==========================================
-# DROPDOWNS
-# ==========================================
 
 all_leagues = list(league_dfs.keys())
 
@@ -622,19 +521,9 @@ with col3:
         key="scatter_leagues"
     )
 
-
-# ==========================================
-# FILTER DATAFRAME
-# ==========================================
-
 filtered_scatter_df = scatter_df[
     scatter_df["league"].isin(selected_leagues)
 ].copy()
-
-
-# ==========================================
-# CREATE SCATTER PLOT
-# ==========================================
 
 if not filtered_scatter_df.empty:
 
